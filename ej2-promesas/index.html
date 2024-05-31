@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"> <!-- Especifica la codificación de caracteres del documento -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Ajusta la vista del documento para que se vea bien en todos los dispositivos -->
+    <title>Pokémon Cards</title> <!-- Título de la página -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> <!-- Importa Bootstrap CSS -->
+    <style>
+        .card { 
+            margin-bottom: 20px; 
+        }
+    </style>
+</head>
+<body class="bg-secondary"> 
+    <div class="container"> 
+        <h1 class="mt-5 mb-4 text-center text-white">Pokémon Cards</h1>
+        <h2 class="mt-5 mb-4 text-center text-white">UF4: Exercici 2 </h2> 
+        <div class="row"> 
+            <div class="col-4"> 
+                <button class="btn btn-primary m-5 w-100" id="Exercici2.1"> 
+                    <div><strong>Exercici 2.1</strong></div> 
+                    <div id="ex2-1-time">TIEMPO: 000 milisegundos</div> 
+                </button>
+            </div>
+            <div class="col-4"> 
+                <button class="btn btn-success m-5 w-100" id="Exercici2.2"> 
+                    <div><strong>Exercici 2.2</strong></div> 
+                    <div id="ex2-2-time">TIEMPO: 000 milisegundos</div> 
+                </button>
+            </div>
+            <div class="col-4"> 
+                <button class="btn btn-warning m-5 w-100" id="Exercici2.3"> 
+                    <div><strong>Exercici 2.3</strong></div> 
+                    <div id="ex2-3-time">TIEMPO: 000 milisegundos</div> 
+                </button>
+            </div>
+        </div>
+      
+        <div class="row" id="pokemon-cards"></div> 
+    </div>
+  
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-8hvayN/2b8mZzxY+4cS6H5BYQgGi3I9tnhJAmgyYEGg4+JbfeVc6m3U5V7y0I7M7" crossorigin="anonymous"></script> <!-- Importa Bootstrap JS -->
+  
+    <script>
+        // Ejercicio 2.1 Async/await
+        async function pokeCartas() {
+            const inicioTiempo = new Date().getTime(); // Guarda el tiempo de inicio
+            try {
+                const response = await fetch("https://pokeapi.co/api/v2/pokemon"); // Realiza una solicitud a la API de Pokémon
+                if (!response.ok) {
+                    throw new Error("Fallo al conectar"); // Si da fallo salta un error
+                }
+                const data = await response.json(); // Convierte la respuesta a JSON
+                const listaPokemon = data.results.slice(0, 12); // Coge los primeros 12 Pokémons
+                const pokemonArray = []; // Crea un array para almacenar la información de los Pokémon
+
+                for (const pokemon of listaPokemon) {
+                    const pokemonResponse = await fetch(pokemon.url); // Solicita los detalles de cada Pokémon
+                    if (!pokemonResponse.ok) {
+                        throw new Error("Fallo al conectar"); // Salta un error si la respuesta no es correcta
+                    }
+                    const pokemonData = await pokemonResponse.json(); // Convierte la respuesta a JSON
+                    const pokemonInfo = { // Crea un objeto con la información del Pokémon
+                        name: pokemonData.name,
+                        id: pokemonData.id,
+                        types: pokemonData.types.map((tipo) => tipo.type.name), // Extrae los tipos del Pokémon
+                        weight: pokemonData.weight,
+                        height: pokemonData.height,
+                    };
+                    pokemonArray.push(pokemonInfo); // Añade el objeto al array
+                }
+
+                displayPokemon(pokemonArray); // Llama a la función para mostrar los Pokémon
+            } catch (error) {
+                console.error("Problema con la operacion:", error); // Muestra el error en la consola
+            } finally {
+                const finTIempo = new Date().getTime(); // Guarda el tiempo de fin
+                const elapsedTime = finTIempo - inicioTiempo; // Calcula el tiempo transcurrido
+                const timeText = `TIEMPO: ${elapsedTime.toFixed(2)} milisegundos`; // Crea un texto con el tiempo
+                const button = document.querySelector(".btn-primary"); // Selecciona el botón correspondiente
+                button.textContent = `Exercici 2.1 ${timeText}`; // Actualiza el texto del botón
+            }
+        }
+
+        function displayPokemon(pokemonArray) {
+            const pokeCartasContainer = document.getElementById("pokemon-cards"); // Selecciona el contenedor de las cartas
+
+            pokeCartasContainer.innerHTML = ''; // Limpia el contenedor antes de añadir nuevas cartas
+
+            pokemonArray.forEach((pokemon) => { 
+                const cardColumn = document.createElement("div"); // Crea un nuevo div para cada carta
+                cardColumn.classList.add("col-md-3"); // Añade la clase de columna
+                cardColumn.innerHTML = `
+                    <div class="card shadow"> <!-- Crea la estructura de la carta -->
+                        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png" class="card-img-top" alt="${pokemon.name}"> <!-- Imagen del Pokémon -->
+                        <div class="card-body">
+                            <h5 class="card-title">${pokemon.name}</h5> <!-- Nombre del Pokémon -->
+                            <div class="card-text">ID: ${pokemon.id}</div> <!-- ID del Pokémon -->
+                            <div class="card-text">Tipo: ${pokemon.types.join(", ")}</div> <!-- Tipos del Pokémon -->
+                            <div class="card-text">Peso: ${pokemon.weight}</div> <!-- Peso del Pokémon -->
+                            <div class="card-text">Altura: ${pokemon.height}</div> <!-- Altura del Pokémon -->
+                        </div>
+                    </div>
+                `;
+                pokeCartasContainer.appendChild(cardColumn); // Añade la carta al contenedor
+            });
+        }
+
+        document.querySelector(".btn-primary").addEventListener("click", pokeCartas); // Añade un evento de clic al botón para ejecutar la función pokeCartas
+
+        // Ejercicio 2.2 .then/.catch/.finally
+        function fetchPokemon() {
+            const inicioTiempo = new Date().getTime(); // Guarda el tiempo de inicio
+
+            fetch("https://pokeapi.co/api/v2/pokemon") // Realiza una solicitud a la API de Pokémon
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Fallo al conectar"); // Lanza un error si la respuesta no es exitosa
+                    }
+                    return response.json(); // Convierte la respuesta a JSON
+                })
+                .then((data) => {
+                    const listaPokemon = data.results.slice(0, 12); // Toma los primeros 12 Pokémon
+                    const pokemonArray = []; // Crea un array para almacenar la información de los Pokémon
+
+                    let chain = null; // Inicializa una variable para encadenar promesas
+                    listaPokemon.forEach((pokemon) => {
+                        if (chain === null) {
+                            chain = fetch(pokemon.url)
+                                .then((pokemonResponse) => {
+                                    if (!pokemonResponse.ok) {
+                                        throw new Error("Fallo al conectar"); // Salta un error si la respuesta no es correcta
+                                    }
+                                    return pokemonResponse.json(); // Convierte la respuesta a JSON
+                                })
+                                .then((pokemonData) => {
+                                    const pokemonInfo = { // Crea un objeto con la información del Pokémon
+                                        name: pokemonData.name,
+                                        id: pokemonData.id,
+                                        types: pokemonData.types.map((tipo) => tipo.type.name), // Extrae los tipos del Pokémon
+                                        weight: pokemonData.weight,
+                                        height: pokemonData.height,
+                                    };
+                                    pokemonArray.push(pokemonInfo); // Añade el objeto al array
+                                });
+                        } else {
+                            chain = chain.then(() => {
+                                return fetch(pokemon.url)
+                                    .then((pokemonResponse) => {
+                                        if (!pokemonResponse.ok) {
+                                            throw new Error("Fallo al conectar"); // Lanza un error si la respuesta no es exitosa
+                                        }
+                                        return pokemonResponse.json(); // Convierte la respuesta a JSON
+                                    })
+                                    .then((pokemonData) => {
+                                        const pokemonInfo = { // Crea un objeto con la información del Pokémon
+                                            name: pokemonData.name,
+                                            id: pokemonData.id,
+                                            types: pokemonData.types.map((tipo) => tipo.type.name), // Extrae los tipos del Pokémon
+                                            weight: pokemonData.weight,
+                                            height: pokemonData.height,
+                                        };
+                                        pokemonArray.push(pokemonInfo); // Añade el objeto al array
+                                    });
+                            });
+                        }
+                    });
+
+                    return chain.then(() => pokemonArray); // Retorna el array de Pokémon después de procesar todas las promesas
+                })
+                .then((pokemonArray) => {
+                    displayPokemon(pokemonArray); // Llama a la función para mostrar los Pokémon
+                })
+                .catch((error) => {
+                    console.error("Problema con la operacion:", error); // Muestra el error en la consola
+                })
+                .finally(() => {
+                    const finTIempo = new Date().getTime(); // Guarda el tiempo de fin
+                    const elapsedTime = finTIempo - inicioTiempo; // Calcula el tiempo transcurrido
+                    const timeText = `TIEMPO: ${elapsedTime.toFixed(2)} milisegundos`; // Crea un texto con el tiempo
+                    const button = document.querySelector(".btn-success"); // Selecciona el botón correspondiente
+                    button.textContent = `Exercici 2.2 ${timeText}`; // Actualiza el texto del botón
+                });
+        }
+
+        document.querySelector(".btn-success").addEventListener("click", fetchPokemon); // Añade un evento de clic al botón para ejecutar la función fetchPokemon
+
+        // Exercici 2.3 Promise.All
+        function fetchPokeballParade() {
+            const inicioTiempo = new Date().getTime(); // Guarda el tiempo de inicio
+            fetch("https://pokeapi.co/api/v2/pokemon") // Realiza una solicitud a la API de Pokémon
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Fallo al conectar"); // Salta un error si la respuesta no es correcta
+                    }
+                    return response.json(); // Convierte la respuesta a JSON
+                })
+                .then((data) => {
+                    const listaPokemon = data.results.slice(0, 12); // Coge los primeros 12 Pokémon
+                    const pokemonPromises = []; // Crea un array para almacenar los Pokémon
+                    listaPokemon.forEach((pokemon) => {
+                        pokemonPromises.push(fetch(pokemon.url)
+                            .then((pokemonResponse) => {
+                                if (!pokemonResponse.ok) {
+                                    throw new Error("Fallo al conectar"); // Salta un error si la respuesta no es correcta
+                                }
+                                return pokemonResponse.json(); // Convierte la respuesta a JSON
+                            })
+                            .then((pokemonData) => ({
+                                name: pokemonData.name,
+                                id: pokemonData.id,
+                                types: pokemonData.types.map((tipo) => tipo.type.name), // Extrae los tipos del Pokémon
+                                weight: pokemonData.weight,
+                                height: pokemonData.height,
+                            }))
+                        );
+                    });
+                    return Promise.all(pokemonPromises); // Espera a que todas las promesas se resuelvan
+                })
+                .then((pokemonArray) => {
+                    displayPokemon(pokemonArray); // Llama a la función para mostrar los Pokémon
+
+                    const finTIempo = new Date().getTime(); // Guarda el tiempo de fin
+                    const elapsedTime = finTIempo - inicioTiempo; // Calcula el tiempo transcurrido
+                    const timeText = `TIEMPO: ${elapsedTime.toFixed(2)} milisegundos`; // Crea un texto con el tiempo
+                    const button = document.querySelector(".btn-warning"); // Selecciona el botón correspondiente
+                    button.textContent = `Exercici 2.3 ${timeText}`; // Actualiza el texto del botón
+                })
+                .catch((error) => {
+                    console.error("Problema con la operacion:", error); // Muestra el error en la consola
+                });
+        }
+
+        document.querySelector(".btn-warning").addEventListener("click", fetchPokeballParade); // Añade un evento de clic al botón para ejecutar la función fetchPokeballParade
+    </script>
+</body>
+</html>
