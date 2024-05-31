@@ -1,5 +1,16 @@
 {
-  "rewrites": [
-    { "source": "/", "destination": "/index.html" }
+  "version": 2,
+  "public": true,
+  "builds": [
+    {
+      "src": "Ejercicio1Fetch/index.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "Ejercicio1Fetch/$1"
+    }
   ]
 }
