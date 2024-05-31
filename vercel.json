@@ -1,16 +1,23 @@
 {
   "version": 2,
-  "public": true,
   "builds": [
     {
       "src": "Ejercicio1Fetch/index.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "ej2-promesas/index.html",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "Ejercicio1Fetch/$1"
+      "src": "/ejercicio1",
+      "dest": "Ejercicio1Fetch/index.html"
+    },
+    {
+      "src": "/ejercicio2",
+      "dest": "ej2-promesas/index.html"
     }
   ]
 }
