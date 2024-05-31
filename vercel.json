@@ -1,23 +1,9 @@
 {
   "version": 2,
   "builds": [
-    {
-      "src": "Ejercicio1Fetch/index.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "ej2-promesas/index.html",
-      "use": "@vercel/static"
-    }
+    { "src": "package.json", "use": "@vercel/node" }
   ],
   "routes": [
-    {
-      "src": "/ejercicio1",
-      "dest": "Ejercicio1Fetch/index.html"
-    },
-    {
-      "src": "/ejercicio2",
-      "dest": "ej2-promesas/index.html"
-    }
+    { "src": "/(.*)", "dest": "/index.js" }
   ]
 }
